@@ -1,38 +1,53 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
+
+	pokeapi "github.com/SkyfuryX/pokedex/internal"
 )
 
 func cleanInput(text string) []string {
-	split := strings.Fields(text)
-	for i, word := range split {
-		split[i] = strings.ToLower(word)
-	}
+	lower := strings.ToLower(text)
+	split := strings.Fields(lower)
 	return split
-}
-
-func commandExit() error {
-	fmt.Print("Closing the Pokedex... Goodbye!")
-	os.Exit(0)
-	return nil
-}
-
-func commandHelp() error {
-	fmt.Print("Welcome to the Pokedex!\nUsage:\n")
-	commands := getCommands()
-	for _, command := range commands {
-		fmt.Printf("%v: %v\n", command.name, command.description)
-	}
-	return nil
 }
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
+}
+
+type config struct {
+	pokeapiClient    pokeapi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
+}
+
+func startREPL(cfg *config) {
+	scanner := bufio.NewScanner(os.Stdin)
+	commands := getCommands()
+	for true {
+		fmt.Print("Pokedex > ")
+		scanner.Scan()
+		input := scanner.Text()
+		if len(input) == 0 {
+			continue
+		}
+		cleanText := cleanInput(input)
+		value, ok := commands[cleanText[0]]
+		if ok {
+			err := value.callback(cfg)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+			}
+		} else {
+			fmt.Print("Unknown command\n")
+		}
+	}
 }
 
 func getCommands() map[string]cliCommand {
@@ -41,12 +56,21 @@ func getCommands() map[string]cliCommand {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			callback:    commandExit,
-		}, 
+		},
 		"help": {
 			name:        "help",
 			description: "Displays a help message",
 			callback:    commandHelp,
 		},
+		"map": {
+			name:        "map",
+			description: "Shows 20 locations from the Pokemon World",
+			callback:    commandMapf,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Shows the previous 20 map locations",
+			callback:    commandMapb,
+		},
 	}
 }
-
