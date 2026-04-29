@@ -1,15 +1,14 @@
 package main
 
 import (
-	pokeapi "github.com/SkyfuryX/pokedex/internal"
 	"time"
+
+	pokeapi "github.com/SkyfuryX/pokedex/internal"
 )
 
 func main() {
-	pokeClient := pokeapi.NewClient(5 * time.Second)
 	cfg := &config{
-		pokeapiClient: pokeClient,
+		pokeapiClient: pokeapi.NewClient(5 * time.Second, 30 * time.Second),
 	}
-
 	startREPL(cfg)
 }
