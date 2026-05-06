@@ -84,16 +84,38 @@ func catch(cfg *config) error {
 	}
 	rand := rand.Intn(101) // number between 0-100
 	fmt.Printf("Throwing a Pokeball at %v...\n", pokemon.Name)
-	
+
 	exp := pokemon.BaseExperience //handles pokemon that have very high base exp (looking at you, Blissey)
 	if exp >= 360 {
-		exp = 360 
+		exp = 360
 	}
 	if rand > (exp / 4) {
 		fmt.Printf("%v was caught!\n", pokemon.Name)
 		cfg.pokedex[pokemon.Name] = pokemon //adds to pokedex once caught
 	} else {
 		fmt.Printf("%v escaped!\n", pokemon.Name)
+	}
+	return nil
+}
+
+func inspect(cfg *config) error {
+	if len(cfg.input) < 2 {
+		return errors.New("Choose a pokemon to view. Use 'pokedex' to see which pokemon you've caught.")
+	}
+	pokemon, ok := cfg.pokedex[cfg.input[1]]
+	if !ok {
+		return errors.New("You haven't caught this pokemon yet")
+	}
+	fmt.Printf("Name: %v\n", pokemon.Name)
+	fmt.Printf("Height: %v\n", pokemon.Height)
+	fmt.Printf("Weight: %v\n", pokemon.Weight)
+	fmt.Print("Stats:\n")
+	for _, stat := range pokemon.Stats {
+		fmt.Printf("  - %v: %v\n", stat.Stat.Name, stat.BaseStat)
+	}
+	fmt.Print("Types:\n")
+	for _, ty := range pokemon.Types {
+		fmt.Printf("  - %v\n", ty.Type.Name)
 	}
 	return nil
 }
