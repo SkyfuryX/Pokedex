@@ -121,6 +121,9 @@ func inspect(cfg *config) error {
 }
 
 func pokedex(cfg *config) error {
+	if len(cfg.pokedex) == 0 {
+		return errors.New("You haven't caught any pokemon yet!")
+	}
 	fmt.Print("Your Pokedex:\n")
 	for key := range cfg.pokedex {
 		fmt.Printf(" - %v\n", key)
