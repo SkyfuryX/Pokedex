@@ -119,3 +119,11 @@ func inspect(cfg *config) error {
 	}
 	return nil
 }
+
+func pokedex(cfg *config) error {
+	fmt.Print("Your Pokedex:\n")
+	for key := range cfg.pokedex {
+		fmt.Printf(" - %v\n", key)
+	}
+	return nil
+}
