@@ -84,7 +84,12 @@ func catch(cfg *config) error {
 	}
 	rand := rand.Intn(101) // number between 0-100
 	fmt.Printf("Throwing a Pokeball at %v...\n", pokemon.Name)
-	if rand > (pokemon.BaseExperience / 3) {
+	
+	exp := pokemon.BaseExperience //handles pokemon that have very high base exp (looking at you, Blissey)
+	if exp >= 360 {
+		exp = 360 
+	}
+	if rand > (exp / 4) {
 		fmt.Printf("%v was caught!\n", pokemon.Name)
 		cfg.pokedex[pokemon.Name] = pokemon //adds to pokedex once caught
 	} else {
